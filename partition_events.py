@@ -33,7 +33,7 @@ for event in range(num_events):
                 coords = []
                 duration = 0
             else:
-                fmt = 'gesture: duration={}, num_coords={}'
+                fmt = 'action: duration={}, num_coords={}'
                 print fmt.format(duration / 1e9, len(coords))
             was_finger_down = finger_down
 
