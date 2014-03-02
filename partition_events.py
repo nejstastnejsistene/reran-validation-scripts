@@ -1,4 +1,5 @@
 import sys
+from evdev.ecodes import *
 
 lines = iter(open(sys.argv[1]))
 
@@ -14,19 +15,19 @@ for event in range(num_events):
     device, type, code, value = map(int, next(lines).split(','))
 
     # Set x coordinate.
-    if type == 3 and code == 0:
+    if type == EV_ABS and code == ABS_X:
         x = value
 
     # Set y coordinate.
-    elif type == 3 and code == 1:
+    elif type == EV_ABS and code == ABS_Y:
         y = value
 
     # Finger up/down.
-    elif type == 1 and code == 330:
+    elif type == EV_KEY and code == BTN_TOUCH:
         finger_down = value
 
     # Seperator.
-    elif type == 0 and code == 0 and value == 0:
+    elif type == EV_SYN and code == SYN_REPORT:
         coords.append((x, y))
         if finger_down != was_finger_down:
             if finger_down:
