@@ -21,7 +21,7 @@ for line in input_file:
     type = int(type, 16)
     code = int(code, 16)
     value = int(value, 16)
-    event = '{},{},{}'.format(type, code, value)
+    event = '{},{},{},{}'.format(device, type, code, value)
     events.append(event)
     
     # Button down.
@@ -29,7 +29,7 @@ for line in input_file:
 
         # If the touch screen has been toggled, let sync events
         # handle the logic.
-        if type == BTN_TOUCH:
+        if code == BTN_TOUCH:
             finger_down = value
 
         # For any other button, print the action after the button has
