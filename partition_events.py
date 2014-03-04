@@ -1,19 +1,28 @@
+import re
 import sys
 from evdev.ecodes import *
 
-lines = iter(open(sys.argv[1]))
+pattern = re.compile(
+        r'(\d*\-\d*): /dev/input/event(\d): ' \
+        r'([0-9a-f]{4}) ([0-9a-f]{4}) ([0-9a-f]{8})')
+
+input_file = open(sys.argv[1])
 
 x, y = 0, 0
 was_finger_down = False
 finger_down = False
+events = []
 coords = []
-duration = 0
+start_time = 0
 
-num_events = int(next(lines))
-for event in range(num_events):
-    duration += int(next(lines))
-    device, type, code, value = map(int, next(lines).split(','))
-
+for event in input_file:
+    time, device, type, code, value = re.match(pattern, event).groups()
+    time = float(time.replace('-', '.'))
+    device = int(device)
+    type = int(type, 16)
+    code = int(code, 16)
+    value = int(value, 16)
+    
     # Set x coordinate.
     if type == EV_ABS and code == ABS_X:
         x = value
@@ -32,10 +41,10 @@ for event in range(num_events):
         if finger_down != was_finger_down:
             if finger_down:
                 coords = []
-                duration = 0
+                start_time = time
             else:
                 fmt = 'action: duration={}, num_coords={}'
-                print fmt.format(duration / 1e9, len(coords))
+                print fmt.format(time - start_time, len(coords))
             was_finger_down = finger_down
 
     else:
