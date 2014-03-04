@@ -13,40 +13,60 @@ was_finger_down = False
 finger_down = False
 events = []
 coords = []
-start_time = 0
 
-for event in input_file:
-    time, device, type, code, value = re.match(pattern, event).groups()
+for line in input_file:
+    time, device, type, code, value = re.match(pattern, line).groups()
     time = float(time.replace('-', '.'))
     device = int(device)
     type = int(type, 16)
     code = int(code, 16)
     value = int(value, 16)
+    event = '{},{},{}'.format(type, code, value)
+    events.append(event)
     
-    # Set x coordinate.
-    if type == EV_ABS and code == ABS_X:
-        x = value
+    # Button down.
+    if type == EV_KEY:
 
-    # Set y coordinate.
-    elif type == EV_ABS and code == ABS_Y:
-        y = value
+        # If the touch screen has been toggled, let sync events
+        # handle the logic.
+        if type == BTN_TOUCH:
+            finger_down = value
 
-    # Finger up/down.
-    elif type == EV_KEY and code == BTN_TOUCH:
-        finger_down = value
+        # For any other button, print the action after the button has
+        # been released.
+        elif value == 0:
+            print ','.join(events),
+            events = []
 
-    # Seperator.
+    # Absolute coordinates from a touchscreen.
+    elif type == EV_ABS:
+        if code == ABS_X:
+            x = value
+        elif code == ABS_Y:
+            y = value
+
+    # Sync.
     elif type == EV_SYN and code == SYN_REPORT:
-        coords.append((x, y))
+
+        # If the finger has changed:
         if finger_down != was_finger_down:
+
+            # Restart the coordinate list.
             if finger_down:
-                coords = []
-                start_time = time
+                coords = [(x, y)]
+
+            # If the finger is removed from the touchscreen, end the
+            # action and print the events.
             else:
-                fmt = 'action: duration={}, num_coords={}'
-                print fmt.format(time - start_time, len(coords))
+                print ','.join(events),
+                events = []
+
             was_finger_down = finger_down
 
+        # Append the current coordinates to the list.
+        else:
+            coords.append((x, y))
+
+
     else:
-        event = type, code, value
-        raise Exception, 'unrecognized event: {}'.format(event)
+         raise Exception, 'unrecognized event: {}'.format(event)
