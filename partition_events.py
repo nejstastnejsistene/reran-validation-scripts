@@ -21,7 +21,7 @@ for line in input_file:
     type = int(type, 16)
     code = int(code, 16)
     value = int(value, 16)
-    event = '{},{},{},{}'.format(device, type, code, value)
+    event = device, type, code, value
     events.append(event)
     
     # Button down.
@@ -35,8 +35,12 @@ for line in input_file:
         # For any other button, print the action after the button has
         # been released.
         elif value == 0:
-            print ','.join(events),
+            duration = time - start_time
+            fmt = 'button press: duration={}, device={}, code={}'
+            print fmt.format(duration, device, keys[code])
             events = []
+        elif value == 1:
+            start_time = time
 
     # Absolute coordinates from a touchscreen.
     elif type == EV_ABS:
@@ -53,13 +57,17 @@ for line in input_file:
 
             # Restart the coordinate list.
             if finger_down:
+                start_time = time
                 coords = [(x, y)]
 
             # If the finger is removed from the touchscreen, end the
             # action and print the events.
             else:
-                print ','.join(events),
+                duration = time - start_time
+                fmt = 'touch action: duration={}, coords={}'
+                print fmt.format(duration, coords)
                 events = []
+                coords = []
 
             was_finger_down = finger_down
 
