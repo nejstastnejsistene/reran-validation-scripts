@@ -3,7 +3,7 @@ import sys
 from evdev.ecodes import *
 
 pattern = re.compile(
-        r'(\d*\-\d*): /dev/input/event(\d): ' \
+        r'\[\s*(\d*\.\d*)\] /dev/input/event(\d): ' \
         r'([0-9a-f]{4}) ([0-9a-f]{4}) ([0-9a-f]{8})')
 
 input_file = open(sys.argv[1])
@@ -15,8 +15,10 @@ events = []
 coords = []
 
 for line in input_file:
+    if line[0] != '[':
+        continue
     time, device, type, code, value = re.match(pattern, line).groups()
-    time = float(time.replace('-', '.'))
+    time = float(time)
     device = int(device)
     type = int(type, 16)
     code = int(code, 16)
@@ -44,10 +46,12 @@ for line in input_file:
 
     # Absolute coordinates from a touchscreen.
     elif type == EV_ABS:
-        if code == ABS_X:
+        if code in (ABS_X, ABS_MT_POSITION_X):
             x = value
-        elif code == ABS_Y:
+        elif code in (ABS_Y, ABS_MT_POSITION_Y):
             y = value
+	elif code == ABS_MT_TRACKING_ID:
+            finger_down = value != 0xffffffff 
 
     # Sync.
     elif type == EV_SYN and code == SYN_REPORT:
