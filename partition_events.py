@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import re
 import sys
 from evdev.ecodes import *
@@ -68,8 +70,8 @@ for line in input_file:
             # action and print the events.
             else:
                 duration = time - start_time
-                fmt = 'touch action: duration={}, coords={}'
-                print fmt.format(duration, coords)
+                fmt = 'touch action: duration={:f}, num_coords={}'
+                print fmt.format(duration, len(coords))
                 events = []
                 coords = []
 
