@@ -24,14 +24,14 @@ while True:
         # Break when we run out of lines in the scenario.
         break
     try:
-        if 'i typed' in line.lower():
+        if 'typed' in line.lower():
             print line
             try:
                 in_quotes = re.search(r'"(.*)"', line).group(1)
                 for i in in_quotes:
                     print (' '*4 + i).ljust(max_len, '.'), next(e)
             except:
-                print >> sys.stderr, '\nError: unable to find delimited string'
+                print >> sys.stderr, '\nError: unable to find delimited string. Don\'t forget to add double quotes for typed events'
                 sys.exit(1)
         else:
             print line.ljust(max_len, '.'), next(e)
