@@ -2,7 +2,18 @@
 
 import re
 import sys
-from evdev.ecodes import *
+#from evdev.ecodes import *
+
+EV_SYN = 0
+EV_KEY = 1
+EV_ABS = 3
+ABS_X = 0
+ABS_Y = 1
+ABS_MT_POSITION_X = 53
+ABS_MT_POSITION_Y = 54
+ABS_MT_TRACKING_ID = 57
+SYN_REPORT = 0
+BTN_TOUCH = 330
 
 pattern = re.compile(
         r'\[\s*(\d*\.\d*)\] /dev/input/event(\d): ' \
