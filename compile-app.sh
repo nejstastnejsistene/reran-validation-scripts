@@ -1,3 +1,8 @@
+#!/bin/sh
+
+partition_events () {
+    export input_file=$1
+    python << EOF
 #!/usr/bin/env python
 
 import re
@@ -19,7 +24,7 @@ pattern = re.compile(
         r'\[\s*(\d*\.\d*)\] /dev/input/event(\d): ' \
         r'([0-9a-f]{4}) ([0-9a-f]{4}) ([0-9a-f]{8})')
 
-input_file = open(sys.argv[1])
+input_file = open('$input_file')
 
 x, y = 0, 0
 was_finger_down = False
@@ -95,3 +100,57 @@ for line in input_file:
 
     else:
          raise Exception, 'unrecognized event: {}'.format(event)
+EOF
+}
+
+expand_description () {
+    export description=$1
+    python << EOF
+import os, sys, re
+with open(os.environ['description']) as f:
+    for line in f.read().split('\n'):
+        if 'typed' in line.lower():
+            try:
+                for ch in re.search(r'"(.*)"', line).group(1):
+                    print 'I touched the "{}" button on the keyboard.'.format(ch)
+            except:
+                print >> sys.stderr, '\nError: unable to find delimited string. Don\'t forget to add double quotes for typed events'
+                sys.exit(1)
+        elif line:
+            print line
+EOF
+}
+
+app=$1
+if [ -z $app ]; then
+    echo usage: $0 \<app name\>
+    exit 1
+fi
+
+for lastname in `ls`; do
+
+    # Skip non-directories.
+    if [ ! -d $lastname ]; then
+        continue
+    fi
+
+    # Make sure the app exists.
+    if [ ! -d "$lastname/$app" ]; then
+        echo \"$lastname/$app\" does not exist
+        continue
+    fi
+
+    # Clear any old data before writing the new data.
+    rm -f "$app-records.txt" "$app-description.txt"
+
+    # Iterate through each scenario.
+    for scenario in `ls "$lastname/$app"`; do
+
+        # For each record, concatentate its events and descriptions.
+        for record in `ls "$lastname/$app/$scenario"/record*.log`; do
+            partition_events $record >> "$app-records.txt"
+            expand_description "$lastname/$app/$scenario/description.txt" >> "$app-desciption.txt"
+        done
+    done
+done
+
