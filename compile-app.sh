@@ -149,7 +149,7 @@ for lastname in `ls`; do
         # For each record, concatentate its events and descriptions.
         for record in `ls "$lastname/$app/$scenario"/record*.log`; do
             partition_events $record >> "$app-records.txt"
-            expand_description "$lastname/$app/$scenario/description.txt" >> "$app-desciption.txt"
+            expand_description "$lastname/$app/$scenario/description.txt" >> "$app-description.txt"
         done
     done
 done
