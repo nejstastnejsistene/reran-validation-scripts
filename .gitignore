@@ -55,3 +55,6 @@ docs/_build/
 *.txt
 *.log
 test
+*.log2
+*.zip
+traces
