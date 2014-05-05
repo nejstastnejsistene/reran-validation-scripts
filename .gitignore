@@ -57,4 +57,4 @@ docs/_build/
 test
 *.log2
 *.zip
-traces
+reran
