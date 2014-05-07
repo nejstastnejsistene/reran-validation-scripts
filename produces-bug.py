@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+import sys
 import re
 import subprocess
 from commands import getoutput
@@ -25,9 +28,12 @@ class LogcatScanner(object):
             tag, pid = m.groups()
             if tag == 'AndroidRuntime' and int(pid) == self.pid:
                 print line
-                reran_process.terminate()
-                self.stop()
-        self.p.terminate()
+                self.p.kill()
+                try:
+                    reran_process.kill()
+                except:
+                    pass
+                sys.exit(0)
 
     def stop(self):
         self.scanning = False
@@ -73,3 +79,8 @@ if __name__ == '__main__':
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     threading.Thread(target=scanner.start, args=(p,)).start()
     p.wait()
+    time.sleep(1)
+    #scanner.p.stdout.close()
+    scanner.p.terminate()
+    scanner.stop()
+    sys.exit(0)
