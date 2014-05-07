@@ -58,3 +58,7 @@ test
 *.log2
 *.zip
 reran
+apps
+scripts
+*.tgz
+*.class
