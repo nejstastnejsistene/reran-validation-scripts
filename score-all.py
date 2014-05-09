@@ -89,9 +89,8 @@ def split_directories(path):
 
 def get_description(scenario):
     path = app, name, scenario = split_directories(scenario)[2:-1]
-    desc_path = os.path.join('reran', 'after_mario_validation',
-                             'data', name, app, scenario, 'description.txt')
-    assert os.path.exists(desc_path)
+    desc_path = os.path.join('reran', 'repository', name, app, scenario, 'description.txt')
+    assert os.path.exists(desc_path), desc_path
     return desc_path
 
 def compare_all(app):

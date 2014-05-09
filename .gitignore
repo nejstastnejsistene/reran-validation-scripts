@@ -62,3 +62,8 @@ apps
 scripts
 *.tgz
 *.class
+gm-dice*
+calculator*
+*.java
+__MACOSX
+frex*
