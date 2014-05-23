@@ -51,8 +51,8 @@ if __name__ == '__main__':
     # (Re)start the app.
     getoutput('adb shell am force-stop {}'.format(package))
     time.sleep(1)
-    getoutput('adb shell am start {}/.GameMasterDice'.format(package))
-    time.sleep(10)
+    getoutput('adb shell am start {}/.ui.MainActivity'.format(package))
+    time.sleep(1)
 
     getoutput('java Translate {} translated.txt'.format(trace))
     getoutput('adb push translated.txt /data/local/.')

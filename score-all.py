@@ -38,7 +38,11 @@ def method_to_logcat_fmt(method):
 def sanitize_scenario(filename):
     with open(filename) as f:
         for line in f:
-            _, _, method = line.strip().split(',', 2)
+            try:
+                _, _, method = line.strip().split(',', 2)
+            except:
+                print >>sys.stderr, filename
+                print >>sys.stderr, line
             if '#' in method:
                 for meth in reversed(method.split('#')):
                     yield method_to_logcat_fmt(meth)
